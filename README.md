@@ -1,6 +1,4 @@
-MUSEMON
-
-# The FED-OS Resistance
+# MUSEMON - The FED-OS Resistance
 
 Shared-map pixel prototype built from the supplied handoff: invite-only email login, player presence, movement and server-issued markdown save tokens. Web frontend uses Vite + vanilla JS; backend uses Supabase; Android uses Capacitor; desktop uses Tauri 2.
 

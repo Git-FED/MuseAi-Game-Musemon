@@ -1,0 +1,29 @@
+{
+  "name": "fed-os-resistance",
+  "version": "1.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "dev": "vite --host 0.0.0.0",
+    "build": "vite build",
+    "preview": "vite preview",
+    "android:init": "npm run build && cap add android",
+    "android:sync": "npm run build && cap sync android",
+    "desktop": "tauri build"
+  },
+  "dependencies": {
+    "@supabase/supabase-js": "^2.0.0",
+    "@capacitor/core": "^7.0.0",
+    "@capacitor/android": "^7.0.0",
+    "@capacitor/filesystem": "^7.0.0",
+    "@capacitor/share": "^7.0.0",
+    "@tauri-apps/api": "^2.0.0",
+    "@tauri-apps/plugin-dialog": "^2.0.0",
+    "@tauri-apps/plugin-fs": "^2.0.0"
+  },
+  "devDependencies": {
+    "vite": "^6.0.0",
+    "@capacitor/cli": "^7.0.0",
+    "@tauri-apps/cli": "^2.0.0"
+  }
+}

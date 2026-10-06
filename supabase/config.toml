@@ -1,0 +1,5 @@
+project_id = "fed-os-resistance"
+[functions.issue-save]
+verify_jwt = false
+[functions.verify-save]
+verify_jwt = false

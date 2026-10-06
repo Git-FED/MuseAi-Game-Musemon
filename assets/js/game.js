@@ -1,0 +1,16 @@
+import {supabase} from './supabase-client.js';import {joinMap} from './multiplayer.js';import './save_handler.js';
+const demo=new URLSearchParams(location.search).has('demo');let p,s;
+try{p=JSON.parse(sessionStorage.getItem('fedos_profile'));s=JSON.parse(sessionStorage.getItem('fedos_save'));}catch{}
+if(demo){p={id:'demo',trainer_name:'Demo'};s={email:'demo',stats:{lvl:1,map_id:'hotel_iot_f1',x_coord:8,y_coord:12}};}
+if(!s||!p||(!demo&&!(await supabase.auth.getSession()).data.session)){location.replace('index.html');throw Error('Login required');}
+window.gameState={email:s.email,mapId:s.stats.map_id,x:s.stats.x_coord,y:s.stats.y_coord};const state=window.gameState;
+const map=Array.from({length:15},(_,y)=>Array.from({length:20},(_,x)=>x===0||y===0||x===19||y===14?2:1));for(let x=4;x<15;x++){map[4][x]=3;map[5][x]=3;}map[2][2]=5;map[2][16]=5;map[8][8]=4;
+function walk(x,y){return map[y]?.[x]===1||map[y]?.[x]===4;}if(!walk(state.x,state.y)){state.x=8;state.y=12;}
+const c=document.getElementById('gameCanvas'),ctx=c.getContext('2d');ctx.imageSmoothingEnabled=false;const keys={};let cooldown=0;
+window.onkeydown=e=>{if(['ArrowUp','ArrowDown','ArrowLeft','ArrowRight','Escape'].includes(e.key))e.preventDefault();keys[e.key.toLowerCase()]=true;if(e.key==='Escape'&&!e.repeat&&!demo)window.onSaveGame();};window.onkeyup=e=>keys[e.key.toLowerCase()]=false;window.onblur=()=>Object.keys(keys).forEach(k=>delete keys[k]);
+for(const b of document.querySelectorAll('[data-dir]')){b.onpointerdown=e=>{e.preventDefault();keys[b.dataset.dir]=true;b.setPointerCapture(e.pointerId);};b.onpointerup=b.onpointercancel=()=>keys[b.dataset.dir]=false;}
+document.getElementById('save').onclick=()=>demo?alert('Demo only. Sign in to save.'):window.onSaveGame();
+function sprite(x,y,name,color){ctx.fillStyle=color;ctx.fillRect(x*32+9,y*32+11,14,16);ctx.fillStyle='#e8c39e';ctx.fillRect(x*32+10,y*32+3,12,10);ctx.fillStyle='#fff';ctx.font='10px monospace';ctx.textAlign='center';ctx.fillText(name,x*32+16,y*32);}
+let last=performance.now();function frame(now){const dt=Math.min(100,now-last);last=now;cooldown-=dt;let dx=0,dy=0,dir='down';if(keys.w||keys.arrowup||keys.up){dy=-1;dir='up';}else if(keys.s||keys.arrowdown||keys.down)dy=1;else if(keys.a||keys.arrowleft||keys.left){dx=-1;dir='left';}else if(keys.d||keys.arrowright||keys.right){dx=1;dir='right';}if(cooldown<=0&&(dx||dy)){cooldown=140;if(walk(state.x+dx,state.y+dy)){state.x+=dx;state.y+=dy;window.publishMove?.(state.x,state.y,dir);}}
+for(let y=0;y<15;y++)for(let x=0;x<20;x++){ctx.fillStyle=({1:'#29292e',2:'#555561',3:'#72502c',4:'#ffce32',5:'#1e668f'})[map[y][x]];ctx.fillRect(x*32,y*32,32,32);ctx.strokeStyle='#222';ctx.strokeRect(x*32,y*32,32,32);}
+for(const v of Object.values(window.remotePlayers)){v.drawX=(v.drawX??v.x)+(v.x-(v.drawX??v.x))*Math.min(1,dt/100);v.drawY=(v.drawY??v.y)+(v.y-(v.drawY??v.y))*Math.min(1,dt/100);sprite(v.drawX,v.drawY,v.name,'#a875ff');}sprite(state.x,state.y,p.trainer_name||'You','#04d361');document.getElementById('hud').textContent=state.mapId+' | Level '+s.stats.lvl+' | Others: '+Object.keys(window.remotePlayers).length;requestAnimationFrame(frame);}requestAnimationFrame(frame);if(!demo)await joinMap(state,p);

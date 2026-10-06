@@ -1,0 +1,1 @@
+export const CONFIG = {SUPABASE_URL:"https://fyinkxfldtfxplctztuv.supabase.co",SUPABASE_PUBLISHABLE:"sb_publishable__jeIxN8d_CCHS-HNKQNbtg_UOC0wubY",AUTH_REDIRECT_URL:"",GAME_VERSION:"1.0.0"}; window.CONFIG=CONFIG;

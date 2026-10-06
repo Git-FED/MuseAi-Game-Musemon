@@ -1,0 +1,8 @@
+{
+  "appId": "com.fedpromptly.resistance",
+  "appName": "FED-OS Resistance",
+  "webDir": "dist",
+  "server": {
+    "androidScheme": "https"
+  }
+}
